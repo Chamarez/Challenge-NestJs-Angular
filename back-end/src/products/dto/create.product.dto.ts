@@ -1,4 +1,10 @@
-import { IsString, IsInt, IsNumber, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsNumber,
+  IsNotEmpty,
+  IsPositive,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -9,14 +15,18 @@ export class CreateProductDto {
   readonly description: string;
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   readonly price: number;
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   readonly stock: number;
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   readonly weight: number;
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   readonly size: number;
 }
