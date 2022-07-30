@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import mongoose from 'mongoose';
 import { CreateProductDto } from './dto/create.product.dto';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
-
+jest.mock('./products.service');
 describe('ProductsController', () => {
   let controller: ProductsController;
   let service: ProductsService;
@@ -68,6 +67,16 @@ describe('ProductsController', () => {
       await controller.delete('1221212112');
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
+    });
+  });
+
+  describe('Function update()', () => {
+    it('should update a product', async () => {
+      const createSpy = jest.spyOn(service, 'update');
+
+      await controller.update('1221212112', createProductDto);
+      expect(createSpy).toBeCalled();
+      expect(createSpy).toBeCalledTimes(1);
     });
   });
 });
