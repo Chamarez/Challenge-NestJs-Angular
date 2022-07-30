@@ -9,8 +9,8 @@ import { Product, ProductDocument } from './schemas/product.schema';
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectModel(Product.name)
-    private readonly productModel: Model<ProductDocument>,
+    @InjectModel('Product')
+    private readonly productModel: Model<Product>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -31,7 +31,7 @@ export class ProductsService {
     const deletedProduct = await this.productModel
       .findByIdAndRemove({ _id: id })
       .exec();
-    return deletedProduct;
+    return !!deletedProduct;
   }
 
   async update(
