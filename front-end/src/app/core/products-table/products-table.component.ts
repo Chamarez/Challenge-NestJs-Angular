@@ -43,10 +43,10 @@ export class ProductsTableComponent implements OnInit {
         (this.page - 1) * this.pageSize + this.pageSize
       );
   }
-  deleteProduct(id: number) {
+  deleteProduct(id: string) {
     this.productsService.deleteProduct(id);
   }
-  updateProduct(id: number, product: Product) {
+  updateProduct(id: string, product: Product) {
     this.productsService.updateProduct(id, product);
   }
 
