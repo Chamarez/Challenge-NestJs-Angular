@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Product } from '../models/product.model';
-import { Observable } from 'rxjs';
-import * as rxops from 'rxjs/operators';
+import {  Observable } from 'rxjs';
+import { map } from "rxjs/operators";
+
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,7 @@ export class ProductsService {
   }
 
   getProductById(id: number) {
-    return this.http.get(`${environment.API_URL}/products/${id}`);
+    return this.http.get(`${environment.API_URL}/products/${id}`).pipe(map(response => <Product>response));
   }
 
 }
