@@ -24,7 +24,7 @@ export class ProductsController {
   }
 
   @Get('index/:id')
-  async findWithIndexId(
+  async findByIndexId(
     @Param('id') id: string,
   ): Promise<GetProductsResponseDto[]> {
     return this.productsService.findByIndexId(id);

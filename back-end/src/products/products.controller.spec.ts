@@ -79,4 +79,24 @@ describe('ProductsController', () => {
       expect(createSpy).toBeCalledTimes(1);
     });
   });
+  
+  describe('get all random', () => {
+    it('find all random objects', async () => {
+      const spy = jest.spyOn(service, 'findAllRandom');
+
+      await controller.findAllRandom();
+      expect(spy).toBeCalled();
+      expect(spy).toBeCalledTimes(1);
+    });
+  });
+
+  describe('Function find by indexId ', () => {
+    it('find by index', async () => {
+      const createSpy = jest.spyOn(service, 'findByIndexId');
+
+      await controller.findByIndexId('1221212112');
+      expect(createSpy).toBeCalled();
+      expect(createSpy).toBeCalledTimes(1);
+    });
+  });
 });
