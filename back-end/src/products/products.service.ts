@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductDto } from './dto/create.product.dto';
@@ -28,13 +33,18 @@ export class ProductsService {
   }
 
   async findOne(id: string): Promise<GetProductsResponseDto> {
-    return this.productModel.findOne({ _id: id }).exec();
+    return this.productModel.findOne({ _id: id }).catch(() => {
+      throw new BadRequestException('Not found');
+    });
   }
 
   async delete(id: string) {
     const deletedProduct = await this.productModel
       .findByIdAndRemove({ _id: id })
-      .exec();
+      .exec()
+      .catch(() => {
+        throw new BadRequestException('Not found');
+      });
     return !!deletedProduct;
   }
 
@@ -48,13 +58,17 @@ export class ProductsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const response = await this.productModel.findOneAndUpdate(
-      { _id: id },
-      {
-        ...updateProductDto,
-      },
-    );
-    return !!response;
+    const response = await this.productModel
+      .findOneAndUpdate(
+        { _id: id },
+        {
+          ...updateProductDto,
+        },
+      )
+      .catch(() => {
+        throw new BadRequestException('Not found');
+      });
+    return !response;
   }
 
   async findAllRandom(): Promise<FindRandomsDto> {
@@ -71,14 +85,22 @@ export class ProductsService {
   }
 
   async findByIndexId(indexId: string): Promise<GetProductsResponseDto[]> {
-    const { indexById } = await this.indexModel.findOne({
-      _id: indexId,
-    });
-    const productList = await this.productModel.find({
-      _id: {
-        $in: indexById,
-      },
-    });
+    const { indexById } = await this.indexModel
+      .findOne({
+        _id: indexId,
+      })
+      .catch(() => {
+        throw new BadRequestException('Not found');
+      });
+    const productList = await this.productModel
+      .find({
+        _id: {
+          $in: indexById,
+        },
+      })
+      .catch(() => {
+        throw new BadRequestException('Not found');
+      });
     const ordered = [];
     for (let i = 0; i < indexById.length; i++) {
       for (let j = 0; j < productList.length; j++) {
@@ -89,7 +111,4 @@ export class ProductsService {
     }
     return ordered;
   }
-
-
-  
 }
