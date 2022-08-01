@@ -3,7 +3,9 @@ import {
   Component,
   ElementRef,
   Input,
+  OnChanges,
   OnInit,
+  SimpleChanges,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -14,6 +16,8 @@ import { ProductsService } from '../services/products.service';
 import { Product } from '../models/product.model';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ProductsTableComponent } from '../products-table/products-table.component';
 
 @Component({
   selector: 'app-modal-container',
@@ -26,8 +30,6 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
   product!: Product;
   closeResult = '';
   form!: FormGroup;
-
-
   @ViewChild('content') templateRef!: TemplateRef<any>;
 
   constructor(
@@ -35,24 +37,26 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private modal: NgbModal,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private productsTableComponent: ProductsTableComponent
   ) {
     this.route.params.subscribe((params) => {
       this.id = params['id'];
     });
   }
+
   ngAfterViewInit(): void {
     this.open(this.templateRef);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      title: [null, [Validators.required, Validators.minLength(1)]],
-      description: ['', [Validators.required, Validators.minLength(3)]],
-      price: ['', [Validators.required]],
-      size: [null, [Validators.required, Validators.minLength(1)]],
-      weight: ['', [Validators.required, Validators.minLength(3)]],
-      stock: ['', [Validators.required]],
+      title: [null, []],
+      description: ['', []],
+      price: ['', []],
+      size: [null, []],
+      weight: ['', []],
+      stock: ['', []],
     });
     this.product$ = this.productsService.getProductById(this.id);
     let product: Product;
@@ -60,17 +64,17 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
       product = data;
       this.updateView(product);
     });
-    console.log(this.router.url.split('/')[3])
   }
 
   open(content: TemplateRef<any>) {
-    this.modal.open(content, { windowClass: 'products-modal' }).result.then(
+    this.modal.open(content, { windowClass: 'products-modal ' , animation:true}).result.then(
       (result) => {
-
         this.router.navigate(['../../'], { relativeTo: this.route });
+        this.productsTableComponent.ngOnInit();
       },
       (reason) => {
         this.router.navigate(['../../'], { relativeTo: this.route });
+        this.productsTableComponent.ngOnInit();
       }
     );
   }
@@ -78,10 +82,13 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
   private getDismissReason(reason: any): void {
     if (reason === ModalDismissReasons.ESC) {
       this.router.navigate(['../../'], { relativeTo: this.route });
+      this.productsTableComponent.ngOnInit();
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
       this.router.navigate(['../../'], { relativeTo: this.route });
+      this.productsTableComponent.ngOnInit();
     } else {
-        this.router.navigate(['../../'], { relativeTo: this.route });
+      this.router.navigate(['../../'], { relativeTo: this.route });
+      this.productsTableComponent.ngOnInit();
     }
   }
 
@@ -94,5 +101,38 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
       weight: product.weight,
       stock: product.stock,
     });
+  }
+  onSubmit() {
+    const product: Product = {
+      title: this.form.value.title,
+      description: this.form.value.description,
+      price: this.form.value.price,
+      stock: this.form.value.stock,
+      weight: this.form.value.weight,
+      size: this.form.value.size,
+      _id: this.id,
+    };
+    this.productsService.updateProduct(this.id, product).subscribe(
+      () => {},
+      (err: HttpErrorResponse) => {
+        if (err.error instanceof Error) {
+          console.log('Client-side error');
+          console.log(err);
+        } else if (err.status == 200) {
+          alert('Su mensaje fue enviado');
+        } else {
+          console.log(err.error.message);
+        }
+      }
+    );
+    this.router.navigate(['../../'], { relativeTo: this.route });
+    this.productsTableComponent.ngOnInit();
+    //const box = document.getElementById('container') as HTMLElement;
+    //box.classList.add('animated');
+
+    // setTimeout(() => {
+    //   this.modal.dismissAll();
+    // }, 2000);
+    this.modal.dismissAll()
   }
 }

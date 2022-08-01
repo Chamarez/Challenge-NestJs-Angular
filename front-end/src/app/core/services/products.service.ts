@@ -20,12 +20,12 @@ export class ProductsService {
   addNewProduct(product: Product): Observable<any> {
     return this.http.post(`${environment.API_URL}/products`, product);
   }
-  deleteProduct(msjId: string) {
-    return this.http.patch(`${environment.API_URL}/products/${msjId}`, '');
+  deleteProduct(id: string) {
+    return this.http.delete(`${environment.API_URL}/products/${id}`);
   }
 
   updateProduct(id: string, product: Product): Observable<any> {
-    return this.http.put(`${environment.API_URL}/product/id`, product);
+    return this.http.put(`${environment.API_URL}/products/${id}`, product);
   }
 
   getProductById(id: string) {

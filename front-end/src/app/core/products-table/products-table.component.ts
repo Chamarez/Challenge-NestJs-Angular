@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ProductsService } from '../services/products.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Product } from '../models/product.model';
@@ -11,11 +11,11 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./products-table.component.scss'],
 })
 export class ProductsTableComponent implements OnInit {
-  products: Product[]  = [];
+  products: Product[] = [];
   pageSize = 10;
   page = 1;
   list: string = '';
-  index:string='';
+  index: string = '';
 
   collectionSize = 0;
 
@@ -26,22 +26,19 @@ export class ProductsTableComponent implements OnInit {
   ) {
     this.route.params.subscribe((params) => {
       this.list = params['list'];
-
     });
-
   }
 
   ngOnInit(): void {
-    if(this.list==="0"){
-      this.getRandomProducts()
-    }else{
+    if (this.list === '0') {
+      this.getRandomProducts();
+    } else {
       this.getProductsByIndex(this.list);
     }
     this.refreshProducts();
-
   }
 
-  getProductsByIndex(index:string) {
+  getProductsByIndex(index: string) {
     this.productsService.getProductByIndex(index).subscribe((data) => {
       this.products = data;
       this.collectionSize = this.products.length;
@@ -54,20 +51,19 @@ export class ProductsTableComponent implements OnInit {
     });
   }
 
-  getRandomProducts(){
-      this.productsService.getRandomProducts().subscribe((data) => {
-        this.products = data.products;
-        this.index = data.index;
-        this.collectionSize = this.products.length;
-        if (this.collectionSize > 200) {
-          this.collectionSize = 200;
-        }
-        this.products.map((x, i) => {
-          x.id = i;
-        });
-        this.router.navigate([`products/list/${this.index}`])
+  getRandomProducts() {
+    this.productsService.getRandomProducts().subscribe((data) => {
+      this.products = data.products;
+      this.index = data.index;
+      this.collectionSize = this.products.length;
+      if (this.collectionSize > 200) {
+        this.collectionSize = 200;
+      }
+      this.products.map((x, i) => {
+        x.id = i;
       });
-
+      this.router.navigate([`products/list/${this.index}`]);
+    });
   }
   refreshProducts() {
     this.products = this.products
@@ -83,8 +79,10 @@ export class ProductsTableComponent implements OnInit {
   updateProduct(id: string, product: Product) {
     this.productsService.updateProduct(id, product);
   }
-  openModal(id:string){
-    console.log(id)
-    this.router.navigate([`products/list/${this.list}/edit/${id}`])
+  openModal(id: string) {
+    this.router.navigate([`products/list/${this.list}/edit/${id}`]);
+  }
+  openConfirmationModal(id: string) {
+    this.router.navigate([`products/list/${this.list}/delete/${id}`]);
   }
 }

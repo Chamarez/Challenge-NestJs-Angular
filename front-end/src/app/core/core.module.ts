@@ -5,14 +5,16 @@ import { ProductsTableComponent } from './products-table/products-table.componen
 import { SharedModule } from '../shared/shared.module';
 import { ModalContainerComponent } from './modal-container/modal-container.component';
 import { AppRoutingModule } from '../app-routing.module';
-
+import { ConfirmationComponent } from './confirmation/confirmation.component';
 
 
 @NgModule({
   declarations: [
     ProductsComponent,
     ProductsTableComponent,
-    ModalContainerComponent
+    ModalContainerComponent,
+    ConfirmationComponent,
+
   ],
   imports: [
     CommonModule,
