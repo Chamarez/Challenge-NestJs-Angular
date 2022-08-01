@@ -30,9 +30,20 @@
         <td>{{ item.weight }}</td>
         <td>{{ item.stock }}</td>
         <td class="edit">
-          <button type="button" class="btn btn-primary " (click)="openModal(item._id)">Edit</button>
-          <button type="button" class="btn btn-danger " (click)="openConfirmationModal(item._id)">Delete</button>
-
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="openModal(item._id || '')"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="openConfirmationModal(item._id || '')"
+          >
+            Delete
+          </button>
         </td>
       </tr>
     </tbody>
@@ -45,7 +56,6 @@
     aria-label="Default pagination"
   ></ngb-pagination>
   <div class="add">
-    <button type="button" class="btn btn-primary">Add</button>
-
+    <button type="button" (click)="openAddModal()" class="btn btn-primary">Add</button>
   </div>
 </div>

@@ -85,4 +85,7 @@ export class ProductsTableComponent implements OnInit {
   openConfirmationModal(id: string) {
     this.router.navigate([`products/list/${this.list}/delete/${id}`]);
   }
+  openAddModal() {
+    this.router.navigate([`products/list/${this.list}/add/`]);
+  }
 }
