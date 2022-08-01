@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { Product } from '../models/product.model';
 import {  Observable } from 'rxjs';
 import { map } from "rxjs/operators";
+import { RandomProduct } from '../models/random-products.model';
 
 
 @Injectable({
@@ -29,6 +30,13 @@ export class ProductsService {
 
   getProductById(id: string) {
     return this.http.get(`${environment.API_URL}/products/${id}`).pipe(map(response => <Product>response));
+  }
+
+  getRandomProducts(): Observable<RandomProduct> {
+    return this.http.get<RandomProduct>(`${environment.API_URL}/products/random`);
+  }
+  getProductByIndex(id: string): Observable<Product[]> {
+    return this.http.get(`${environment.API_URL}/products/index/${id}`).pipe(map(response => <Product[]>response));
   }
 
 }

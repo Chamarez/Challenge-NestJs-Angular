@@ -3,6 +3,7 @@ import { ProductsService } from '../services/products.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Product } from '../models/product.model';
 import { map } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-products-table',
@@ -10,29 +11,62 @@ import { map } from 'rxjs';
   styleUrls: ['./products-table.component.scss'],
 })
 export class ProductsTableComponent implements OnInit {
-  products: Product[] = [];
+  products: Product[]  = [];
   pageSize = 10;
   page = 1;
+  list: string = '';
+  index:string='';
 
   collectionSize = 0;
 
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {
+    this.route.params.subscribe((params) => {
+      this.list = params['list'];
 
-  ngOnInit(): void {
-    this.getProducts();
-    this.refreshProducts();
+    });
+
   }
 
-  getProducts() {
-    this.productsService.getProducts().subscribe((data) => {
-      this.products = data.sort(() => (Math.random() > 0.5 ? 1 : -1));
+  ngOnInit(): void {
+    if(this.list==="0"){
+      this.getRandomProducts()
+    }else{
+      this.getProductsByIndex(this.list);
+    }
+    this.refreshProducts();
+
+  }
+
+  getProductsByIndex(index:string) {
+    this.productsService.getProductByIndex(index).subscribe((data) => {
+      this.products = data;
       this.collectionSize = this.products.length;
       if (this.collectionSize > 200) {
         this.collectionSize = 200;
       }
-      this.products.map((x, i)=>{
-        x.id = i   })
+      this.products.map((x, i) => {
+        x.id = i;
+      });
     });
+  }
+
+  getRandomProducts(){
+      this.productsService.getRandomProducts().subscribe((data) => {
+        this.products = data.products;
+        this.index = data.index;
+        this.collectionSize = this.products.length;
+        if (this.collectionSize > 200) {
+          this.collectionSize = 200;
+        }
+        this.products.map((x, i) => {
+          x.id = i;
+        });
+        this.router.navigate([`products/list/${this.index}`])
+      });
 
   }
   refreshProducts() {
@@ -49,5 +83,4 @@ export class ProductsTableComponent implements OnInit {
   updateProduct(id: string, product: Product) {
     this.productsService.updateProduct(id, product);
   }
-
 }

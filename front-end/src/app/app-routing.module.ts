@@ -6,13 +6,13 @@ import { ProductsComponent } from './core/products/products.component';
 
 const routes: Routes = [
   {path:'products', component: ProductsComponent, children:[
-    {path: 'list', component:ProductsTableComponent, children:[
+    {path: 'list/:list', component:ProductsTableComponent, children:[
       {path: ':id', component:ModalContainerComponent},
     ]},
 
   ]},
-  {path: "", redirectTo:"products", pathMatch: 'full'},
-  {path: '**', redirectTo:"products", pathMatch: 'full'},
+  {path: "", redirectTo:"products/list/0", pathMatch: 'full'},
+  {path: '**', redirectTo:"products/list/0", pathMatch: 'full'},
 
 ];
 
