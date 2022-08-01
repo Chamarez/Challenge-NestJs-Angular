@@ -23,7 +23,7 @@ export class ProductsController {
     return this.productsService.findAllRandom();
   }
 
-  @Get('/index/:id')
+  @Get('index/:id')
   async findWithIndexId(
     @Param('id') id: string,
   ): Promise<GetProductsResponseDto[]> {

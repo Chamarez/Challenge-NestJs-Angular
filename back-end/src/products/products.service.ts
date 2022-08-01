@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EmptyError, find } from 'rxjs';
 import { CreateProductDto } from './dto/create.product.dto';
 import { FindRandomsDto } from './dto/findRandoms.dto';
 import { GetProductsResponseDto } from './dto/getProducts.response.dto';
@@ -73,14 +72,21 @@ export class ProductsService {
 
   async findByIndexId(indexId: string): Promise<GetProductsResponseDto[]> {
     const { indexById } = await this.indexModel.findOne({
-      _id: 'indexId',
+      _id: indexId,
     });
-    console.log(indexById);
     const productList = await this.productModel.find({
       _id: {
         $in: indexById,
       },
     });
-    return productList;
+    const ordered = [];
+    for (let i = 0; i < indexById.length; i++) {
+      for (let j = 0; j < productList.length; j++) {
+        if (indexById[i] == productList[j]._id.toHexString()) {
+          ordered.push(productList[j]);
+        }
+      }
+    }
+    return ordered;
   }
 }
