@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  Input,
   OnInit,
   TemplateRef,
   ViewChild,
@@ -26,6 +27,7 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
   closeResult = '';
   form!: FormGroup;
 
+
   @ViewChild('content') templateRef!: TemplateRef<any>;
 
   constructor(
@@ -33,52 +35,64 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private modal: NgbModal,
-    private fb: FormBuilder,
-
+    private fb: FormBuilder
   ) {
     this.route.params.subscribe((params) => {
       this.id = params['id'];
+    });
+  }
+  ngAfterViewInit(): void {
+    this.open(this.templateRef);
+  }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      title: [null, [Validators.required, Validators.minLength(1)]],
+      description: ['', [Validators.required, Validators.minLength(3)]],
+      price: ['', [Validators.required]],
+      size: [null, [Validators.required, Validators.minLength(1)]],
+      weight: ['', [Validators.required, Validators.minLength(3)]],
+      stock: ['', [Validators.required]],
     });
     this.product$ = this.productsService.getProductById(this.id);
     let product: Product;
     this.product$.subscribe((data) => {
       product = data;
-      console.log(product);
+      this.updateView(product);
     });
-  }
-  ngAfterViewInit(): void {
-    this.open(this.templateRef)
-  }
-
-  ngOnInit(): void {
-
-    this.form = this.fb.group({
-      mount: [null, [Validators.required, Validators.minLength(1)]],
-      concept: ['', [Validators.required, Validators.minLength(3)]],
-      operation: ['', [Validators.required]],
-    });
+    console.log(this.router.url.split('/')[3])
   }
 
   open(content: TemplateRef<any>) {
-    this.modal
-      .open(content, { windowClass: 'products-modal' })
-      .result.then(
-        (result) => {
-          this.closeResult = `Closed with: ${result}`;
-        },
-        (reason) => {
-          this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        }
-      );
+    this.modal.open(content, { windowClass: 'products-modal' }).result.then(
+      (result) => {
+
+        this.router.navigate(['../../'], { relativeTo: this.route });
+      },
+      (reason) => {
+        this.router.navigate(['../../'], { relativeTo: this.route });
+      }
+    );
   }
 
-  private getDismissReason(reason: any): string {
+  private getDismissReason(reason: any): void {
     if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
+      this.router.navigate(['../../'], { relativeTo: this.route });
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
+      this.router.navigate(['../../'], { relativeTo: this.route });
     } else {
-      return `with: ${reason}`;
+        this.router.navigate(['../../'], { relativeTo: this.route });
     }
+  }
+
+  updateView(product: Product) {
+    this.form.patchValue({
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      size: product.size,
+      weight: product.weight,
+      stock: product.stock,
+    });
   }
 }

@@ -83,4 +83,8 @@ export class ProductsTableComponent implements OnInit {
   updateProduct(id: string, product: Product) {
     this.productsService.updateProduct(id, product);
   }
+  openModal(id:string){
+    console.log(id)
+    this.router.navigate([`products/list/${this.list}/edit/${id}`])
+  }
 }

@@ -7,12 +7,11 @@ import { ProductsComponent } from './core/products/products.component';
 const routes: Routes = [
   {path:'products', component: ProductsComponent, children:[
     {path: 'list/:list', component:ProductsTableComponent, children:[
-      {path: ':id', component:ModalContainerComponent},
+      {path: 'edit/:id', component:ModalContainerComponent},
     ]},
 
   ]},
-  {path: "", redirectTo:"products/list/0", pathMatch: 'full'},
-  {path: '**', redirectTo:"products/list/0", pathMatch: 'full'},
+
 
 ];
 
