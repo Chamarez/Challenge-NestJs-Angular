@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EmptyError } from 'rxjs';
+import { EmptyError, find } from 'rxjs';
 import { CreateProductDto } from './dto/create.product.dto';
 import { UpdateProductDTO } from './dto/update.product.dto';
+import { Index } from './schemas/index.schema';
 import { Product, ProductDocument } from './schemas/product.schema';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class ProductsService {
   constructor(
     @InjectModel('Product')
     private readonly productModel: Model<Product>,
+    @InjectModel('Index')
+    private readonly indexModel: Model<Index>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -51,5 +54,31 @@ export class ProductsService {
       },
     );
     return !!response;
+  }
+
+  async findAllRandom(): Promise<any> {
+    let productRandom = await this.productModel.find().exec();
+    productRandom = productRandom.sort(() => (Math.random() > 0.5 ? 1 : -1));
+
+    const index: string[] = productRandom.map((x) => x._id.toHexString());
+
+    const { _id } = await this.indexModel.create({ indexById: index });
+    return {
+      products: productRandom,
+      index: _id,
+    };
+  }
+
+  async findByIndexId(indexId: string): Promise<any> {
+    const { indexById } = await this.indexModel.findOne({
+      _id: 'indexId',
+    });
+    console.log(indexById);
+    const productList = await this.productModel.find({
+      _id: {
+        $in: indexById,
+      },
+    });
+    return productList;
   }
 }

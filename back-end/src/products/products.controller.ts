@@ -16,6 +16,11 @@ import { Product } from './schemas/product.schema';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Get('/random/')
+  async findAllRandom(): Promise<Product[]> {
+    return this.productsService.findAllRandom();
+  }
+
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
     await this.productsService.create(createProductDto);
@@ -43,4 +48,10 @@ export class ProductsController {
   ) {
     return this.productsService.update(id, updateProductDto);
   }
+
+  @Get('/index/:id')
+  async findWithIndexId(@Param('id') id: string): Promise<Product[]> {
+    return this.productsService.findByIndexId(id);
+  }
+
 }
