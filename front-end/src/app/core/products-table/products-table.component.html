@@ -1,0 +1,51 @@
+<router-outlet></router-outlet>
+<div class="container">
+  <table class="table table-striped table-hover table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Product</th>
+        <th scope="col">Description</th>
+        <th scope="col">Price</th>
+        <th scope="col">Size</th>
+        <th scope="col">Weight</th>
+        <th scope="col">Stock</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="
+          let item of products
+            | slice: (page - 1) * pageSize:(page - 1) * pageSize + pageSize
+        "
+      >
+        <th scope="row">{{ item.id }}</th>
+        <td>
+          {{ item.title }}
+        </td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.size }}</td>
+        <td>{{ item.weight }}</td>
+        <td>{{ item.stock }}</td>
+        <td class="edit">
+          <button type="button" class="btn btn-primary " (click)="openModal(item._id)">Edit</button>
+          <button type="button" class="btn btn-danger " (click)="openConfirmationModal(item._id)">Delete</button>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ngb-pagination
+    [pageSize]="10"
+    [collectionSize]="collectionSize"
+    [(page)]="page"
+    aria-label="Default pagination"
+  ></ngb-pagination>
+  <div class="add">
+    <button type="button" class="btn btn-primary">Add</button>
+
+  </div>
+</div>

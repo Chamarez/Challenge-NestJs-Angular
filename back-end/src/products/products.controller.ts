@@ -8,6 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create.product.dto';
+import { FindRandomsDto } from './dto/findRandoms.dto';
+import { GetProductsResponseDto } from './dto/getProducts.response.dto';
 import { UpdateProductDTO } from './dto/update.product.dto';
 import { ProductsService } from './products.service';
 import { Product } from './schemas/product.schema';
@@ -16,13 +18,25 @@ import { Product } from './schemas/product.schema';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Get('/random/')
+  async findAllRandom(): Promise<FindRandomsDto> {
+    return this.productsService.findAllRandom();
+  }
+
+  @Get('index/:id')
+  async findWithIndexId(
+    @Param('id') id: string,
+  ): Promise<GetProductsResponseDto[]> {
+    return this.productsService.findByIndexId(id);
+  }
+
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
     await this.productsService.create(createProductDto);
   }
 
   @Get()
-  async findAll(): Promise<Product[]> {
+  async findAll(): Promise<GetProductsResponseDto[]> {
     return this.productsService.findAll();
   }
 

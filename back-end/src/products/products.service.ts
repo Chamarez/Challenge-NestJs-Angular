@@ -1,9 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EmptyError } from 'rxjs';
 import { CreateProductDto } from './dto/create.product.dto';
+import { FindRandomsDto } from './dto/findRandoms.dto';
+import { GetProductsResponseDto } from './dto/getProducts.response.dto';
 import { UpdateProductDTO } from './dto/update.product.dto';
+import { Index } from './schemas/index.schema';
 import { Product, ProductDocument } from './schemas/product.schema';
 
 @Injectable()
@@ -11,6 +13,8 @@ export class ProductsService {
   constructor(
     @InjectModel('Product')
     private readonly productModel: Model<Product>,
+    @InjectModel('Index')
+    private readonly indexModel: Model<Index>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -19,11 +23,11 @@ export class ProductsService {
     return createNewProduct;
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(): Promise<GetProductsResponseDto[]> {
     return this.productModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Product> {
+  async findOne(id: string): Promise<GetProductsResponseDto> {
     return this.productModel.findOne({ _id: id }).exec();
   }
 
@@ -51,5 +55,38 @@ export class ProductsService {
       },
     );
     return !!response;
+  }
+
+  async findAllRandom(): Promise<FindRandomsDto> {
+    let productRandom = await this.productModel.find().exec();
+    productRandom = productRandom.sort(() => (Math.random() > 0.5 ? 1 : -1));
+
+    const index: string[] = productRandom.map((x) => x._id.toHexString());
+
+    const { _id } = await this.indexModel.create({ indexById: index });
+    return {
+      products: productRandom,
+      index: _id.toHexString(),
+    };
+  }
+
+  async findByIndexId(indexId: string): Promise<GetProductsResponseDto[]> {
+    const { indexById } = await this.indexModel.findOne({
+      _id: indexId,
+    });
+    const productList = await this.productModel.find({
+      _id: {
+        $in: indexById,
+      },
+    });
+    const ordered = [];
+    for (let i = 0; i < indexById.length; i++) {
+      for (let j = 0; j < productList.length; j++) {
+        if (indexById[i] == productList[j]._id.toHexString()) {
+          ordered.push(productList[j]);
+        }
+      }
+    }
+    return ordered;
   }
 }
