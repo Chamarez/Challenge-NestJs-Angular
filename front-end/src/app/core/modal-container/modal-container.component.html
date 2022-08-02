@@ -5,7 +5,8 @@
   >
 
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-title">Update and Delete</h4>
+    <h4 *ngIf="isEdit" class="modal-title" id="modal-title">Update a product</h4>
+    <h4 *ngIf="!isEdit" class="modal-title" id="modal-title">Add a new product</h4>
     <button
       type="button"
       class="btn-close"
