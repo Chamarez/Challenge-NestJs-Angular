@@ -70,11 +70,6 @@ export class ConfirmationComponent implements OnInit, AfterViewInit {
       if (err.error instanceof Error) {
         console.log("Client-side error");
         console.log(err);
-      }else if (err.status == 200){
-        console.log("Product deleted");
-
-      }else {
-        console.log(err.error.message);
       } })
 
     this.router.navigate(['../../'], { relativeTo: this.route });

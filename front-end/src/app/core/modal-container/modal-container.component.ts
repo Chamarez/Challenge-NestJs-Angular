@@ -126,13 +126,10 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
           if (err.error instanceof Error) {
             console.log('Client-side error');
             console.log(err);
-          } else if (err.status == 200) {
-            alert('Su mensaje fue enviado');
-          } else {
-            console.log(err.error.message);
           }
         }
         );
+        this.router.navigate(['../../'], { relativeTo: this.route });
       }else{
         const product: Product = {
           title: this.form.value.title,
@@ -149,11 +146,13 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
             console.log(err.error.message);
           }
 
-        )}
+        )
+        this.router.navigate(['../../../0'], { relativeTo: this.route });
+      }
 
 
 
-    this.router.navigate(['../../'], { relativeTo: this.route });
+
     this.productsTableComponent.ngOnInit();
 
     this.modal.dismissAll()
