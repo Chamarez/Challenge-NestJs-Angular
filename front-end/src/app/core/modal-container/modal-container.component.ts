@@ -55,12 +55,12 @@ export class ModalContainerComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      title: [null, []],
-      description: ['', []],
-      price: ['', []],
-      size: [null, []],
-      weight: ['', []],
-      stock: ['', []],
+      title: [null, [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(3)]],
+      price: ['', [Validators.required, Validators.min(0)]],
+      size: [null, [Validators.required, Validators.min(0)]],
+      weight: ['', [Validators.required, Validators.min(0)]],
+      stock: ['', [Validators.required, Validators.min(0)]],
     });
     if(this.router.url.includes("edit")){
       this.product$ = this.productsService.getProductById(this.id);
